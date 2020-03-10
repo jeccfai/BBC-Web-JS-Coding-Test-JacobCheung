@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Hello Bulma!</title>
+    <link rel="stylesheet" href="css/main.css">
+    <script type="text/javascript" src="lib/main.js"></script>
+	<script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"> </script>
+</head>
+	<body>
+	
+	<section class="hero is-dark">
+    <div class="hero-body">
+		<div class="container">
+			<h1 class="title">
+			LOREM NEWS
+			</h1>
+		</div>
+    </div>
+	</section>
+	
+	<div class = "container is-fluid">
+		<h1 class="title is-3" id="Title"> </h1>
+		<div class = "container">
+			<h2 class="content is-medium" id="heading"> </h2>
+				<div class = "container" id = "paragraph-container"></div>
+				
+	<div class = "level">
+		<div class="level-item">
+			<button class="button is-light" id="button-left" onClick="nextPage('left')">
+				<span class="icon is-small">
+					<i class="fas fa-bold"></i>
+				</span>
+			</button>
+		</div>
+		<div class="level-item">
+			<button class="button is-dark" id="button-right" onClick="nextPage('right')">-></button>
+		</div>
+	</div>
+			<script>
+				var i = 0;
+				var url = ["https://raw.githubusercontent.com/bbc/news-coding-test-dataset/master/data/article-1.json",
+							"https://raw.githubusercontent.com/bbc/news-coding-test-dataset/master/data/article-2.json",
+							"https://raw.githubusercontent.com/bbc/news-coding-test-dataset/master/data/article-3.json",
+							"https://raw.githubusercontent.com/bbc/news-coding-test-dataset/master/data/article-4.json",
+							"https://raw.githubusercontent.com/bbc/news-coding-test-dataset/master/data/article-5.json"]
+
+				$(document).ready(testFunction());
+
+				function testFunction(){
+					$.getJSON(url[i], function(data){
+						var myData = [];
+						$("#Title").html(data.title);
+						$.each(data.body, function(key, val){
+							var obj = JSON.parse(JSON.stringify(val));
+							switch(obj.type){
+								case "heading":
+									$("#heading").append("<strong>" + obj.model.text + "</strong>");
+									break;
+								case "paragraph":
+									$("#paragraph-container").append("<p>" + obj.model.text + "</p><br>");
+									break;
+								case "image":
+									$("#paragraph-container").append("<img src=" + obj.model.url + "alt="+ obj.model.altText + "height=" + obj.model.height + "width=" + obj.model.width + ">");
+									break;
+								case "list":
+									$("#paragraph-container").append("<ol type='i'>");
+									(obj.model.items).forEach(myFunction);
+									$("#paragraph-container").append( "</ol>" );
+							};
+						});
+					});
+				};
+				
+				function myFunction(item){
+					$("#paragraph-container").append( "<li>" + item + "</li>" );
+				}
+				
+				function nextPage(direction){
+					if(direction == "right"){
+						i=i+1;
+					}
+					if(direction == "left"){
+						i=i-1;
+					}
+					if (i >= url.length){
+						i=0
+					};
+					if (i < 0){
+						i=url.length-1;
+					};
+					$("#paragraph-container").empty();
+					$("#heading").empty();
+					testFunction();
+				}
+			</script>
+		</div>
+	</div>
+	</body>
+</html>
