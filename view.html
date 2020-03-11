@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="css/main.css">
     <script type="text/javascript" src="lib/main.js"></script>
 	<script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"> </script>
+	<script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+
 </head>
 	<body>
 	
@@ -27,18 +29,26 @@
 			<h2 class="content is-medium" id="heading"> </h2>
 				<div class = "container" id = "paragraph-container"></div>
 				
-	<div class = "level">
+	<div class = "level" id="button-container">
 		<div class="level-item">
-			<button class="button is-light" id="button-left" onClick="nextPage('left')">
+			<button class="button is-dark" id="button-left" onClick="nextPage('left')">
 				<span class="icon is-small">
-					<i class="fas fa-bold"></i>
+					<i class="fas fa-arrow-left"></i>
 				</span>
 			</button>
 		</div>
 		<div class="level-item">
-			<button class="button is-dark" id="button-right" onClick="nextPage('right')">-></button>
+			<button class="button is-dark" id="button-right" onClick="nextPage('right')">
+				<span class="icon is-small">
+					<i class="fas fa-arrow-right"></i>
+				</span>
+			</button>
 		</div>
 	</div>
+	<footer class="footer" id="footer">
+		<div class="content has-text-centered" id="footer-div">
+		
+		</div>
 			<script>
 				var i = 0;
 				var url = ["https://raw.githubusercontent.com/bbc/news-coding-test-dataset/master/data/article-1.json",
@@ -50,6 +60,7 @@
 				$(document).ready(testFunction());
 
 				function testFunction(){
+					document.getElementById("footer-div").innerHTML = "Page " + (i+1);
 					$.getJSON(url[i], function(data){
 						var myData = [];
 						$("#Title").html(data.title);
