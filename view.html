@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Hello Bulma!</title>
+    <title id="urltitle"> </title>
     <link rel="stylesheet" href="css/main.css">
     <script type="text/javascript" src="lib/main.js"></script>
 	<script type="text/javascript" src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"> </script>
@@ -29,6 +29,11 @@
 			<h2 class="content is-medium" id="heading"> </h2>
 				<div class = "container" id = "paragraph-container"></div>
 				
+	<div class = "container is-fluid">
+	<form action='result.php' method = 'post' id = "ranking-body">
+	</form>
+	</div>
+	
 	<div class = "level" id="button-container">
 		<div class="level-item">
 			<button class="button is-dark" id="button-left" onClick="nextPage('left')">
@@ -45,9 +50,9 @@
 			</button>
 		</div>
 	</div>
+	
 	<footer class="footer" id="footer">
-		<div class="content has-text-centered" id="footer-div">
-		
+		<div class="content has-text-centered" id="footer-div"> <!--page number footer -->
 		</div>
 			<script>
 				var i = 0;
@@ -55,14 +60,15 @@
 							"https://raw.githubusercontent.com/bbc/news-coding-test-dataset/master/data/article-2.json",
 							"https://raw.githubusercontent.com/bbc/news-coding-test-dataset/master/data/article-3.json",
 							"https://raw.githubusercontent.com/bbc/news-coding-test-dataset/master/data/article-4.json",
-							"https://raw.githubusercontent.com/bbc/news-coding-test-dataset/master/data/article-5.json"]
+							"https://raw.githubusercontent.com/bbc/news-coding-test-dataset/master/data/article-5.json"] //array of articles
 
-				$(document).ready(testFunction());
-
-				function testFunction(){
+				$(document).ready(displayPage());
+				function displayPage(){ //pulls the json files and converts them into readable text
+					buttonDisplay();
 					document.getElementById("footer-div").innerHTML = "Page " + (i+1);
+					$("#ranking-body").empty();
 					$.getJSON(url[i], function(data){
-						var myData = [];
+						$("#urltitle").html(data.title);
 						$("#Title").html(data.title);
 						$.each(data.body, function(key, val){
 							var obj = JSON.parse(JSON.stringify(val));
@@ -78,33 +84,72 @@
 									break;
 								case "list":
 									$("#paragraph-container").append("<ol type='i'>");
-									(obj.model.items).forEach(myFunction);
+									(obj.model.items).forEach(splitList);
 									$("#paragraph-container").append( "</ol>" );
 							};
 						});
 					});
+					if(i == url.length){ //if the reader has finished all the articles.
+						$("#urltitle").html("Rank Articles");
+						$("#Title").html("Rank Articles");
+						$("#heading").html("Rank the articles you have just viewed from Good to Bad, the option to go back and view them is available to you:");
+						url.forEach(ranking);
+					};
 				};
 				
-				function myFunction(item){
+				function splitList(item){ //works on splitting lists up by their elements
 					$("#paragraph-container").append( "<li>" + item + "</li>" );
 				}
 				
-				function nextPage(direction){
+				function ranking(url, index){ //for each article, there is a new radio for them to rank it.
+					$("#ranking-body").append("<div class='container' id='radio-container'>");
+					$("#ranking-body").append(" Article "+ (index+1) + ": " +"<label class='radio'> <input type='radio' name='article"+index+"Rank' value='Good'> Good </label>");
+					$("#ranking-body").append("<label class='radio'> <input type='radio' name='article"+index+"Rank' value='Okay'> Okay </label>");
+					$("#ranking-body").append("<label class='radio'> <input type='radio' name='article"+index+"Rank' value='Bad'> Bad </label> <br> </div>");
+					$("#ranking-body").append("</div>");
+				}
+				
+				function postRankingData(){ //passes the ranking data to a php file, returning the data back to the webpage.
+					var ranks = [];
+					for(var j=0;j<url.length;j++){
+						ranks.push($("input[name=article"+j+"Rank]:checked").val());
+					};
+					$.post('result.php', {rankArray : ranks}, function(result){console.log(result); alert(result);});
+				}
+				
+				function nextPage(direction){ //increments the element of the url array changing the page.
 					if(direction == "right"){
 						i=i+1;
 					}
 					if(direction == "left"){
 						i=i-1;
 					}
-					if (i >= url.length){
-						i=0
-					};
-					if (i < 0){
-						i=url.length-1;
-					};
 					$("#paragraph-container").empty();
 					$("#heading").empty();
-					testFunction();
+					displayPage();
+				}
+				
+				function buttonDisplay(){ //if on start page, cannot go further back and vice versa for the last page.
+					if (i == 0){
+						$("#button-left").attr("class","button is-dark is-static");
+					}else{
+						$("#button-left").attr("class","button is-dark");
+					};
+					if (i == (url.length-1)){
+						$("#button-right").attr("class","button is-success");
+						$("#button-right").html("Rank Articles");
+					}else{
+						$("#button-right").attr("class","button is-dark");
+						$("#button-right").html("<span class='icon is-small'> <i class='fas fa-arrow-right'></i> </span>");
+					};
+					if (i == url.length){
+						$("#button-right").attr("class","button is-success");
+						$("#button-right").attr("onClick","postRankingData()");
+						$("#button-right").html("Submit Rankings");
+					}else{
+						$("#button-right").attr("class","button is-dark");
+						$("#button-right").attr("onClick","nextPage('right')");
+					};
 				}
 			</script>
 		</div>
