@@ -68,7 +68,7 @@
 					document.getElementById("footer-div").innerHTML = "Page " + (i+1);
 					$("#ranking-body").empty();
 					$.getJSON(url[i], function(data){
-						$("#urltitle").html(data.title);
+						$("#urltitle").html("LOREM NEWS - " + data.title); //title of site with the title of article on
 						$("#Title").html(data.title);
 						$.each(data.body, function(key, val){
 							var obj = JSON.parse(JSON.stringify(val));
@@ -90,7 +90,7 @@
 						});
 					});
 					if(i == url.length){ //if the reader has finished all the articles.
-						$("#urltitle").html("Rank Articles");
+						$("#urltitle").html("LOREM NEWS - Rank Articles");
 						$("#Title").html("Rank Articles");
 						$("#heading").html("Rank the articles you have just viewed from Good to Bad, the option to go back and view them is available to you:");
 						url.forEach(ranking);
